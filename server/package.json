@@ -1,0 +1,42 @@
+{
+  "name": "npi-admin-server",
+  "version": "1.0.0",
+  "description": "NUST Personality Index Admin Portal Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node seeds/init.js",
+    "reset-admin": "node seeds/reset-admin.js",
+    "migrate-org": "node scripts/migrate-org-binding.js",
+    "migrate-questions": "node scripts/migrate-questions-org.js",
+    "migrate-roles": "node scripts/migrate-role-permissions.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.0.3",
+    "excel": "^1.0.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.18.2",
+    "express-async-handler": "^1.2.0",
+    "express-validator": "^7.2.1",
+    "js": "^0.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "nodemailer": "^6.9.1",
+    "socket.io": "^4.8.1",
+    "validator": "^13.9.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
