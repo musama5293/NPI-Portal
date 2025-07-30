@@ -392,7 +392,7 @@ const pagePermissionGroups = [
     name: 'Role-Specific Pages',
     permissions: [
       { name: 'access_supervisor_tests', label: 'Access Supervisor Feedback Forms' },
-      { name: 'access_my_tests', label: 'Access My Tests' },
+      { name: 'access_my_tests', label: 'Access My Assessments' },
       { name: 'access_results', label: 'Access Results' },
     ]
   }

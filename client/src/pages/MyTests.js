@@ -970,7 +970,7 @@ const SupervisorTests = () => {
           subtitle="Complete feedback forms for candidates assigned to you"
           breadcrumbs={[
             { label: 'Dashboard', path: '/' },
-            { label: 'Supervisor Feedback', path: '/my-tests' }
+            { label: 'Supervisor Feedback', path: '/my-assessments' }
           ]}
           icon={<PersonIcon />}
         />
@@ -1203,7 +1203,7 @@ const MyTests = () => {
             textColor="primary"
             variant="fullWidth"
           >
-            <Tab label="My Tests" id="tab-0" />
+            <Tab label="My Assessments" id="tab-0" />
             <Tab label="Supervisor Feedback" id="tab-1" />
           </Tabs>
         </Paper>

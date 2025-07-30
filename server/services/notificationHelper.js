@@ -498,8 +498,8 @@ class NotificationHelper {
           slot_date: jobData.slot_date,
           slot_time: jobData.slot_time
         },
-        action_url: `/my-tests`,
-        action_text: 'View Tests'
+        action_url: `/my-assessments`,
+        action_text: 'View Assessments'
       };
       
       const candidateNotif = await Notification.createAndSend(candidateNotification, this.io);

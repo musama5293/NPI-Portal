@@ -51,7 +51,7 @@ const pagePermissionGroups = [
     name: 'Results & Analytics',
     permissions: [
       { name: 'access_results_dashboard', label: 'Results Dashboard' },
-      { name: 'access_my_tests', label: 'My Tests' },
+      { name: 'access_my_tests', label: 'My Assessments' },
       { name: 'access_results', label: 'Results' }
     ]
   },

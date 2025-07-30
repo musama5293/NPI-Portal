@@ -1027,7 +1027,7 @@ const TakeTest = () => {
         }
         
         setTimeout(() => {
-          navigate('/my-tests');
+          navigate('/my-assessments');
         }, 3000);
       }
     } catch (error) {
@@ -1389,7 +1389,7 @@ const TakeTest = () => {
           </Alert>
           <Button 
             variant="contained" 
-            onClick={() => navigate('/my-tests')}
+            onClick={() => navigate('/my-assessments')}
             sx={{
               backgroundColor: nustTheme.primary,
               '&:hover': {
@@ -1397,7 +1397,7 @@ const TakeTest = () => {
               }
             }}
           >
-            Return to My Tests
+            Return to My Assessments
           </Button>
         </Box>
       )}
@@ -1443,7 +1443,7 @@ const TakeTest = () => {
             <Button 
               variant="contained" 
               size="large"
-              onClick={() => navigate('/my-tests')}
+              onClick={() => navigate('/my-assessments')}
               sx={{
                 backgroundColor: nustTheme.primary,
                 borderRadius: 3,
@@ -1459,7 +1459,7 @@ const TakeTest = () => {
                 transition: 'all 0.3s ease'
               }}
             >
-              Return to My Tests
+              Return to My Assessments
             </Button>
           </Paper>
         </Box>
