@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Role = require('../models/role.model');
 
-const MONGO_URI = 'mongodb://localhost:27017/npi_portal';
+const MONGO_URI = 'mongodb://127.0.0.1:27017/npi_portal';
 
 mongoose.connect(MONGO_URI)
   .then(async () => {

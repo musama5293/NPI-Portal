@@ -181,16 +181,16 @@ const DepartmentForm = () => {
           </Typography>
         </Box>
 
-        <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TextField
                 name="dept_name"
                 label="Department Name"
                 fullWidth
-                required
-                value={formData.dept_name}
-                onChange={handleChange}
+                    required
+                    value={formData.dept_name}
+                    onChange={handleChange}
               />
             </Grid>
 
@@ -200,9 +200,9 @@ const DepartmentForm = () => {
                 <Select
                   labelId="org-select-label"
                   id="org-select"
-                  name="org_id"
-                  value={selectedOrgId}
-                  onChange={handleChange}
+                    name="org_id"
+                    value={selectedOrgId}
+                    onChange={handleChange}
                   label="Organization"
                   disabled={isEditMode}
                 >
@@ -211,7 +211,7 @@ const DepartmentForm = () => {
                   </MenuItem>
                   {organizations.map((org) => (
                     <MenuItem key={org.org_id} value={org.org_id.toString()}>
-                      {org.org_name}
+                        {org.org_name}
                     </MenuItem>
                   ))}
                 </Select>
@@ -224,11 +224,11 @@ const DepartmentForm = () => {
                 <Select
                   labelId="inst-select-label"
                   id="inst-select"
-                  name="inst_id"
-                  value={formData.inst_id}
-                  onChange={handleChange}
+                    name="inst_id"
+                    value={formData.inst_id}
+                    onChange={handleChange}
                   label="Institute"
-                  disabled={!selectedOrgId}
+                    disabled={!selectedOrgId}
                 >
                   <MenuItem value="">
                     <em>Select an institute</em>
@@ -249,7 +249,7 @@ const DepartmentForm = () => {
                     <Switch
                       checked={formData.dept_status === 1}
                       onChange={handleStatusChange}
-                      name="dept_status"
+                    name="dept_status"
                       color="primary"
                     />
                   }
@@ -266,14 +266,14 @@ const DepartmentForm = () => {
                   sx={{ mr: 1 }}
                   onClick={() => navigate('/departments')}
                   disabled={submitting}
-                >
-                  Cancel
+              >
+                Cancel
                 </Button>
                 <Button
-                  type="submit"
+                type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={submitting}
+                disabled={submitting}
                 >
                   {submitting ? (
                     <CircularProgress size={24} />
@@ -286,7 +286,7 @@ const DepartmentForm = () => {
               </Box>
             </Grid>
           </Grid>
-        </form>
+          </form>
       </Paper>
     </MainLayout>
   );
