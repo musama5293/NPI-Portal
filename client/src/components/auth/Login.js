@@ -90,6 +90,9 @@ const Login = () => {
       // Handle response - OTP required
       if (response.success && response.data.requires_otp) {
         localStorage.setItem('user_id', response.data.user_id);
+        localStorage.setItem('login_response', JSON.stringify({
+          email: response.data.email
+        }));
         toast.success('OTP sent to your email');
         navigate('/verify-otp');
       } 
