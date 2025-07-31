@@ -6,7 +6,7 @@ import socketService from '../services/socketService';
 import notificationService from '../services/notificationService';
 
 // Backend API URL
-const API_URL = 'http://localhost:5000';
+const API_URL = ['http://10.250.7.238:5000'];
 
 // Create context
 const AuthContext = createContext();

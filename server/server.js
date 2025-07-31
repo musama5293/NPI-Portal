@@ -59,7 +59,7 @@ connectDB();
 
 // CORS configuration - updated to accept requests from port 5001
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5001'],
+  origin: ['http://localhost:3000', 'http://localhost:5001','http://10.250.7.238:5001','http://npi-ai.nust.edu.pk:5001'],
   credentials: true
 }));
 
