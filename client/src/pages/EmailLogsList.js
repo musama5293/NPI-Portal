@@ -80,7 +80,9 @@ const EmailLogsList = () => {
     'result_notification',
     'hiring_confirmation',
     'rejection_notification',
-    'reminder'
+    'reminder',
+    'otp_verification',
+    'otp_resend'
   ];
 
   useEffect(() => {

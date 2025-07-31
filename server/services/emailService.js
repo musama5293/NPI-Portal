@@ -10,18 +10,10 @@ class EmailService {
 
   // Create nodemailer transporter
   createTransporter() {
-    // Debug logging to see what config is being used
-    console.log('📧 Email Configuration Debug:');
-    console.log('EMAIL_SERVICE:', config.EMAIL_SERVICE);
-    console.log('EMAIL_PORT:', config.EMAIL_PORT);
-    console.log('EMAIL_USER:', config.EMAIL_USER ? '***' + config.EMAIL_USER.slice(-4) : 'undefined');
-    console.log('EMAIL_PASS:', config.EMAIL_PASS ? '***' + config.EMAIL_PASS.slice(-4) : 'undefined');
-    console.log('EMAIL_FROM:', config.EMAIL_FROM);
-    
     const transportConfig = {
       host: config.EMAIL_SERVICE,
       port: config.EMAIL_PORT,
-      secure: config.EMAIL_PORT === 465,
+      secure: false, // Mailtrap uses non-secure connection
       connectionTimeout: 10000, // 10 seconds
       greetingTimeout: 5000, // 5 seconds
       socketTimeout: 10000, // 10 seconds
@@ -29,17 +21,10 @@ class EmailService {
         user: config.EMAIL_USER,
         pass: config.EMAIL_PASS
       },
-      debug: true, // Enable debug mode
-      logger: true // Enable logging
-    };
-    
-    console.log('📧 Transport Config:', {
-      ...transportConfig,
-      auth: {
-        user: transportConfig.auth.user ? '***' + transportConfig.auth.user.slice(-4) : 'undefined',
-        pass: transportConfig.auth.pass ? '***' + transportConfig.auth.pass.slice(-4) : 'undefined'
+      tls: {
+        rejectUnauthorized: false // Allow self-signed certificates
       }
-    });
+    };
     
     return nodemailer.createTransport(transportConfig);
   }
@@ -178,12 +163,43 @@ class EmailService {
 
   // Send simple email without template
   async sendSimpleEmail(to, subject, content, options = {}) {
+    let emailLog = null;
+    
     try {
       const {
         isHtml = true,
         attachments = [],
-        priority = 'normal'
+        priority = 'normal',
+        sentBy = null,
+        recipientId = null,
+        recipientType = 'candidate',
+        organizationId = null,
+        templateType = 'custom',
+        relatedEntity = null
       } = options;
+
+      // Create email log entry if sentBy is provided
+      if (sentBy) {
+        try {
+          emailLog = await EmailLog.logEmail({
+            template_type: templateType,
+            template_id: null, // No template for simple emails
+            recipient_email: to,
+            recipient_type: recipientType,
+            recipient_id: recipientId,
+            subject: subject,
+            variables_used: {},
+            email_status: 'pending',
+            sent_by: sentBy,
+            organization_id: organizationId,
+            related_entity: relatedEntity
+          });
+        } catch (logError) {
+          console.warn('Failed to create email log entry:', logError.message);
+          // Continue with email sending even if logging fails
+          emailLog = null;
+        }
+      }
 
       const mailOptions = {
         from: config.EMAIL_FROM,
@@ -200,13 +216,34 @@ class EmailService {
 
       const info = await this.transporter.sendMail(mailOptions);
       
+      // Update email log with success status
+      if (emailLog) {
+        await EmailLog.findByIdAndUpdate(emailLog._id, {
+          email_status: 'sent',
+          message_id: info.messageId
+        });
+      }
+      
       return {
         success: true,
         messageId: info.messageId,
-        recipient: to
+        recipient: to,
+        emailLogId: emailLog?._id
       };
 
     } catch (error) {
+      // Update email log with error status
+      if (emailLog) {
+        try {
+          await EmailLog.findByIdAndUpdate(emailLog._id, {
+            email_status: 'failed',
+            error_message: error.message
+          });
+        } catch (updateError) {
+          console.warn('Failed to update email log with error status:', updateError.message);
+        }
+      }
+      
       console.error('Error sending simple email:', error);
       throw error;
     }

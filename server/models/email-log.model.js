@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const EmailLogSchema = new mongoose.Schema({
   log_id: {
     type: Number,
-    required: true,
+    required: false, // Make it optional initially
     unique: true
   },
   template_type: {
@@ -25,6 +25,8 @@ const EmailLogSchema = new mongoose.Schema({
       'password_reset',
       'system_notification',
       'reminder',
+      'otp_verification',
+      'otp_resend',
       'custom'
     ],
     required: true
@@ -126,11 +128,15 @@ EmailLogSchema.index({ sent_by: 1, created_at: -1 });
 
 // Pre-save middleware to generate log_id
 EmailLogSchema.pre('save', async function(next) {
-  if (this.isNew) {
-    const lastLog = await this.constructor.findOne({}, {}, { sort: { log_id: -1 } });
-    this.log_id = lastLog ? lastLog.log_id + 1 : 1;
+  try {
+    if (this.isNew && !this.log_id) {
+      const lastLog = await this.constructor.findOne({}, {}, { sort: { log_id: -1 } });
+      this.log_id = lastLog ? lastLog.log_id + 1 : 1;
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
 });
 
 // Method to mark email as delivered

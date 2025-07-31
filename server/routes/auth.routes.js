@@ -5,7 +5,6 @@ const {
   login, 
   verifyOtp, 
   resendOtp,
-  testEmail,
   resetPassword, 
   getMe,
   logout,
@@ -18,7 +17,6 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/verify-otp', verifyOtp);
 router.post('/resend-otp', resendOtp);
-router.post('/test-email', testEmail);
 router.post('/reset-password', resetPassword);
 
 // Protected routes
