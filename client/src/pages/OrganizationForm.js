@@ -123,47 +123,47 @@ const OrganizationForm = () => {
           </Typography>
         </Box>
 
-        <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <TextField
                 name="org_name"
                 label="Organization Name"
                 fullWidth
-                required
-                value={formData.org_name}
-                onChange={handleChange}
-              />
+                    required
+                    value={formData.org_name}
+                    onChange={handleChange}
+                  />
             </Grid>
 
             <Grid item xs={12} md={6}>
               <TextField
-                name="poc_name"
+                    name="poc_name"
                 label="Point of Contact Name"
                 fullWidth
                 value={formData.poc_name}
-                onChange={handleChange}
-              />
+                    onChange={handleChange}
+                  />
             </Grid>
-
+                
             <Grid item xs={12} md={6}>
               <TextField
-                name="contact_no"
+                    name="contact_no"
                 label="Contact Number"
                 fullWidth
                 value={formData.contact_no}
-                onChange={handleChange}
-              />
+                    onChange={handleChange}
+                  />
             </Grid>
-
+                
             <Grid item xs={12} md={6}>
               <TextField
                 name="email"
                 label="Email"
-                type="email"
+                    type="email"
                 fullWidth
                 value={formData.email}
-                onChange={handleChange}
+                    onChange={handleChange}
               />
             </Grid>
 
@@ -185,25 +185,25 @@ const OrganizationForm = () => {
 
             <Grid item xs={12}>
               <TextField
-                name="address"
+                    name="address"
                 label="Address"
                 fullWidth
                 multiline
                 rows={3}
                 value={formData.address}
-                onChange={handleChange}
+                    onChange={handleChange}
               />
             </Grid>
-
+                
             <Grid item xs={12}>
               <TextField
-                name="terms_and_conditions"
+                    name="terms_and_conditions"
                 label="Terms and Conditions"
                 fullWidth
                 multiline
                 rows={4}
                 value={formData.terms_and_conditions}
-                onChange={handleChange}
+                    onChange={handleChange}
               />
             </Grid>
 
@@ -215,15 +215,15 @@ const OrganizationForm = () => {
                   sx={{ mr: 1 }}
                   onClick={() => navigate('/organizations')}
                   disabled={submitting}
-                >
-                  Cancel
+              >
+                Cancel
                 </Button>
                 <Button
-                  type="submit"
+                type="submit"
                   variant="contained"
                   color="primary"
-                  disabled={submitting}
-                >
+                disabled={submitting}
+              >
                   {submitting ? (
                     <CircularProgress size={24} />
                   ) : isEditMode ? (
@@ -235,7 +235,7 @@ const OrganizationForm = () => {
               </Box>
             </Grid>
           </Grid>
-        </form>
+          </form>
       </Paper>
     </MainLayout>
   );

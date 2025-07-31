@@ -19,7 +19,8 @@ import {
 import {
   LockOutlined as LockIcon,
   KeyOutlined as KeyIcon,
-  VerifiedUser as VerifiedUserIcon
+  VerifiedUser as VerifiedUserIcon,
+  Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { useThemeMode } from '../../theme/ThemeProvider';
 import ThemeToggle from '../common/ThemeToggle';
@@ -30,7 +31,10 @@ const OTPVerification = () => {
   const theme = useTheme();
   const { isDarkMode } = useThemeMode();
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [resendTimer, setResendTimer] = useState(0);
+  const [userEmail, setUserEmail] = useState('');
   const inputRefs = [
     useRef(null),
     useRef(null),
@@ -53,6 +57,20 @@ const OTPVerification = () => {
     if (!userId) {
       toast.error('Session expired, please login again');
       navigate('/login');
+      return;
+    }
+
+    // Try to get email from login response if available
+    const loginResponse = localStorage.getItem('login_response');
+    if (loginResponse) {
+      try {
+        const response = JSON.parse(loginResponse);
+        if (response.email) {
+          setUserEmail(response.email);
+        }
+      } catch (error) {
+        console.error('Error parsing login response:', error);
+      }
     }
   }, [navigate]);
 
@@ -170,6 +188,58 @@ const OTPVerification = () => {
     }
   };
 
+  // Resend OTP function
+  const handleResendOtp = async () => {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) {
+      toast.error('Session expired, please login again');
+      navigate('/login');
+      return;
+    }
+
+    setResendLoading(true);
+    try {
+      const response = await fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: userId }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('New OTP sent successfully!');
+        setResendTimer(60); // Start 60-second countdown
+        setOtp(['', '', '', '', '', '']); // Clear OTP fields
+        if (inputRefs[0].current) {
+          inputRefs[0].current.focus();
+        }
+      } else {
+        toast.error(data.message || 'Failed to resend OTP');
+      }
+    } catch (error) {
+      console.error('Resend OTP Error:', error);
+      toast.error('Failed to resend OTP. Please try again.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  // Timer effect for resend countdown
+  useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [resendTimer]);
+
   return (
     <Box
       sx={{
@@ -229,6 +299,11 @@ const OTPVerification = () => {
             align="center"
           >
             Please enter the one-time password sent to your email
+            {userEmail && (
+              <Typography component="span" variant="body2" color="primary.main" sx={{ display: 'block', mt: 1, fontWeight: 500 }}>
+                {userEmail}
+              </Typography>
+            )}
           </Typography>
           
           <Box 
@@ -303,6 +378,30 @@ const OTPVerification = () => {
             >
                 {loading ? 'Verifying...' : 'Verify OTP'}
             </Button>
+            
+            {/* Resend OTP Section */}
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+              {resendTimer > 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  Resend OTP in {resendTimer} seconds
+                </Typography>
+              ) : (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  disabled={resendLoading}
+                  onClick={handleResendOtp}
+                  startIcon={resendLoading ? <CircularProgress size={16} /> : <RefreshIcon />}
+                  sx={{ 
+                    fontSize: '0.875rem',
+                    fontWeight: 500
+                  }}
+                >
+                  {resendLoading ? 'Sending...' : 'Resend OTP'}
+                </Button>
+              )}
+            </Box>
             
             <Divider sx={{ my: 2 }}>
               <Typography variant="body2" color="text.secondary">

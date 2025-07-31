@@ -260,6 +260,7 @@ export const AuthProvider = ({ children }) => {
         
         // Remove temporary user_id
         localStorage.removeItem('user_id');
+        localStorage.removeItem('login_response');
       }
       
       return {

@@ -133,7 +133,7 @@ exports.createSubDomain = async (req, res) => {
     }
     
     // Check if domain exists and user has access (admins can access any domain)
-    const domainFilter = req.user.role_id === 1 
+    const domainFilter = req.user.role_id === 1
       ? { domain_id }
       : { domain_id, org_id: req.user.org_id };
     

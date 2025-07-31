@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/user.model');
 const config = require('../config/config');
-const { sendEmail } = require('../utils/email');
+const emailService = require('../services/emailService');
 const { encryptText, decryptText } = require('../utils/encryption');
 
 /**
@@ -120,7 +120,7 @@ exports.login = async (req, res) => {
 
       // Send OTP via email
       try {
-        await sendEmail({
+        await emailService.sendEmail({
           to: user.email,
           subject: 'OTP Verification Code',
           html: `<p>Your One-Time Password (OTP) to access the NPI Admin is: <strong>${otp}</strong></p>`
@@ -210,7 +210,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Generate OTP
+    // Generate OTP for all users (enhanced security)
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiration = Date.now() + 300000; // 5 minutes
 
@@ -219,29 +219,89 @@ exports.login = async (req, res) => {
     user.otp_expiration = otpExpiration;
     await user.save();
 
-    // Log login
+    // Log login attempt
     await User.findByIdAndUpdate(user._id, {
       login_datetime: Date.now()
     });
 
-    // Send OTP via email
+    // Send OTP via email with enhanced template
     try {
-      await sendEmail({
-        to: user.email,
-        subject: 'OTP Verification Code',
-        html: `<p>Your One-Time Password (OTP) to access the NPI Admin is: <strong>${otp}</strong></p>`
-      });
+      const emailTemplate = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <div style="background: linear-gradient(135deg, #1976d2, #1565c0); color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h2 style="margin: 0; font-size: 24px;">NUST Personality Index</h2>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">Admin Portal Security</p>
+          </div>
+          
+          <div style="padding: 30px 20px; background: #fafafa;">
+            <h3 style="color: #333; margin-bottom: 20px;">🔐 OTP Verification Required</h3>
+            
+            <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
+              Hello <strong>${user.username}</strong>,<br><br>
+              We've detected a login attempt to your NPI Admin Portal account. To ensure your account security, please use the following One-Time Password (OTP) to complete your login:
+            </p>
+            
+            <div style="background: #fff; border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
+              <div style="font-size: 32px; font-weight: bold; color: #1976d2; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+                ${otp}
+              </div>
+              <p style="color: #666; margin: 10px 0 0 0; font-size: 14px;">
+                This code will expire in 5 minutes
+              </p>
+            </div>
+            
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin: 20px 0;">
+              <p style="color: #856404; margin: 0; font-size: 14px;">
+                <strong>⚠️ Security Notice:</strong> If you didn't attempt to log in, please contact your system administrator immediately.
+              </p>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 25px;">
+              Best regards,<br>
+              <strong>NPI Admin Portal Team</strong>
+            </p>
+          </div>
+          
+          <div style="background: #f5f5f5; padding: 15px; border-radius: 0 0 8px 8px; text-align: center;">
+            <p style="color: #999; margin: 0; font-size: 12px;">
+              This is an automated security message. Please do not reply to this email.
+            </p>
+          </div>
+        </div>
+      `;
+
+      console.log('📧 Attempting to send OTP email to:', user.email);
+      
+      const emailResult = await emailService.sendSimpleEmail(
+        user.email,
+        '🔐 NPI Admin Portal - OTP Verification Required',
+        emailTemplate,
+        {
+          sentBy: user._id,
+          recipientId: user._id,
+          recipientType: 'admin',
+          organizationId: user.org_id,
+          templateType: 'otp_verification',
+          relatedEntity: {
+            entity_type: 'notification',
+            entity_id: 'otp_login'
+          }
+        }
+      );
+      
+      console.log('✅ OTP email sent successfully:', emailResult);
     } catch (emailError) {
-      console.error('Email sending failed:', emailError.message);
-      // Continue execution even if email fails
+      console.error('❌ OTP email sending failed:', emailError);
+      // Continue execution even if email fails - user can use master OTP
     }
 
     return res.status(200).json({
       success: true,
-      message: 'OTP verification required. If email delivery fails, use master OTP: 135791',
+      message: 'OTP verification required. Check your email for the verification code.',
       data: {
         user_id: user._id,
-        requires_otp: true
+        requires_otp: true,
+        email: user.email
       }
     });
   } catch (error) {
@@ -283,18 +343,24 @@ exports.verifyOtp = async (req, res) => {
       }
     }
 
-    // Check if OTP is expired
-    if (user.otp_expiration && user.otp_expiration < Date.now()) {
+    // Check if OTP is expired (strict 5-minute expiration)
+    const now = Date.now();
+    if (user.otp_expiration && user.otp_expiration < now) {
       // Special master OTP is not subject to expiration
       if (otp !== '135791') {
+        // Clear expired OTP
+        user.otp = undefined;
+        user.otp_expiration = undefined;
+        await user.save();
+        
         return res.status(400).json({
           success: false,
-          message: 'OTP has expired'
+          message: 'OTP has expired. Please request a new one.'
         });
       }
     }
 
-    // Clear OTP
+    // Clear OTP after successful verification
     user.otp = undefined;
     user.otp_expiration = undefined;
     await user.save();
@@ -337,6 +403,134 @@ exports.verifyOtp = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'OTP verification failed',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Resend OTP
+ * @route POST /api/auth/resend-otp
+ * @access Public
+ */
+exports.resendOtp = async (req, res) => {
+  try {
+    const { user_id } = req.body;
+
+    // Check if user exists
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if user has a recent OTP request (rate limiting - 1 minute cooldown)
+    const now = Date.now();
+    if (user.otp_expiration && user.otp_expiration > now - 60000) {
+      const remainingTime = Math.ceil((user.otp_expiration - (now - 60000)) / 1000);
+      return res.status(429).json({
+        success: false,
+        message: `Please wait ${remainingTime} seconds before requesting another OTP`
+      });
+    }
+
+    // Generate new OTP and invalidate previous one
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiration = now + 300000; // 5 minutes
+
+    // Save new OTP to user (this automatically invalidates the previous one)
+    user.otp = otp;
+    user.otp_expiration = otpExpiration;
+    await user.save();
+
+    // Send new OTP via email
+    try {
+      const emailTemplate = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <div style="background: linear-gradient(135deg, #1976d2, #1565c0); color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h2 style="margin: 0; font-size: 24px;">NUST Personality Index</h2>
+            <p style="margin: 5px 0 0 0; opacity: 0.9;">Admin Portal Security</p>
+          </div>
+          
+          <div style="padding: 30px 20px; background: #fafafa;">
+            <h3 style="color: #333; margin-bottom: 20px;">🔄 New OTP Generated</h3>
+            
+            <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
+              Hello <strong>${user.username}</strong>,<br><br>
+              You requested a new One-Time Password (OTP) for your NPI Admin Portal login. Here's your new verification code:
+            </p>
+            
+            <div style="background: #fff; border: 2px dashed #1976d2; border-radius: 8px; padding: 20px; text-align: center; margin: 20px 0;">
+              <div style="font-size: 32px; font-weight: bold; color: #1976d2; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+                ${otp}
+              </div>
+              <p style="color: #666; margin: 10px 0 0 0; font-size: 14px;">
+                This code will expire in 5 minutes
+              </p>
+            </div>
+            
+            <div style="background: #e8f5e8; border: 1px solid #c8e6c9; border-radius: 6px; padding: 15px; margin: 20px 0;">
+              <p style="color: #2e7d32; margin: 0; font-size: 14px;">
+                <strong>✅ Security Confirmed:</strong> This OTP was requested by you. If you didn't make this request, please contact your system administrator.
+              </p>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 25px;">
+              Best regards,<br>
+              <strong>NPI Admin Portal Team</strong>
+            </p>
+          </div>
+          
+          <div style="background: #f5f5f5; padding: 15px; border-radius: 0 0 8px 8px; text-align: center;">
+            <p style="color: #999; margin: 0; font-size: 12px;">
+              This is an automated security message. Please do not reply to this email.
+            </p>
+          </div>
+        </div>
+      `;
+
+      console.log('📧 Attempting to send resend OTP email to:', user.email);
+      
+      const emailResult = await emailService.sendSimpleEmail(
+        user.email,
+        '🔄 NPI Admin Portal - New OTP Generated',
+        emailTemplate,
+        {
+          sentBy: user._id,
+          recipientId: user._id,
+          recipientType: 'admin',
+          organizationId: user.org_id,
+          templateType: 'otp_resend',
+          relatedEntity: {
+            entity_type: 'notification',
+            entity_id: 'otp_resend'
+          }
+        }
+      );
+      
+      console.log('✅ Resend OTP email sent successfully:', emailResult);
+    } catch (emailError) {
+      console.error('❌ Resend OTP email sending failed:', emailError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP email. Please try again later.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'New OTP sent successfully. Check your email.',
+      data: {
+        user_id: user._id,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to resend OTP',
       error: error.message
     });
   }

@@ -37,7 +37,6 @@ import {
   ExpandMore as ExpandMoreIcon,
   FilterList as FilterIcon
 } from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import MainLayout from '../layouts/MainLayout';
 import PageHeader from '../components/common/PageHeader';
 import emailApiService from '../services/emailApi';
@@ -81,7 +80,9 @@ const EmailLogsList = () => {
     'result_notification',
     'hiring_confirmation',
     'rejection_notification',
-    'reminder'
+    'reminder',
+    'otp_verification',
+    'otp_resend'
   ];
 
   useEffect(() => {
@@ -268,20 +269,26 @@ const EmailLogsList = () => {
                 </Grid>
 
                 <Grid item xs={12} md={1.5}>
-                  <DatePicker
+                  <TextField
                     label="From Date"
-                    value={filters.date_from}
-                    onChange={(date) => handleFilterChange('date_from', date)}
-                    slotProps={{ textField: { size: 'small', fullWidth: true } }}
+                    type="date"
+                    value={filters.date_from ? filters.date_from.toISOString().split('T')[0] : ''}
+                    onChange={(e) => handleFilterChange('date_from', e.target.value ? new Date(e.target.value) : null)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
 
                 <Grid item xs={12} md={1.5}>
-                  <DatePicker
+                  <TextField
                     label="To Date"
-                    value={filters.date_to}
-                    onChange={(date) => handleFilterChange('date_to', date)}
-                    slotProps={{ textField: { size: 'small', fullWidth: true } }}
+                    type="date"
+                    value={filters.date_to ? filters.date_to.toISOString().split('T')[0] : ''}
+                    onChange={(e) => handleFilterChange('date_to', e.target.value ? new Date(e.target.value) : null)}
+                    size="small"
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
 

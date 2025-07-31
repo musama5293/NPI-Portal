@@ -64,6 +64,7 @@ const migrateRolePermissions = async () => {
       // Set default values for new page permissions based on role type
       if (role.role_id === 1) {
         // Admin role - grant all permissions
+        updateFields.access_dashboard = true; // Only admin gets dashboard access
         updateFields.access_results_dashboard = true;
         updateFields.access_admin_support = true;
         updateFields.access_email_dashboard = true;
@@ -89,6 +90,7 @@ const migrateRolePermissions = async () => {
         updateFields.access_role_management = true;
       } else if (role.role_id === 3) {
         // Supervisor role - grant basic permissions
+        updateFields.access_dashboard = false; // Supervisors don't get dashboard access
         updateFields.access_results_dashboard = false;
         updateFields.access_admin_support = false;
         updateFields.access_email_dashboard = false;
@@ -114,6 +116,7 @@ const migrateRolePermissions = async () => {
         updateFields.access_role_management = false;
       } else if (role.role_id === 4) {
         // Candidate role - grant limited permissions
+        updateFields.access_dashboard = false; // Candidates don't get dashboard access
         updateFields.access_results_dashboard = false;
         updateFields.access_admin_support = false;
         updateFields.access_email_dashboard = false;
@@ -139,6 +142,7 @@ const migrateRolePermissions = async () => {
         updateFields.access_role_management = false;
       } else {
         // Custom roles - grant no new permissions by default
+        updateFields.access_dashboard = false; // Custom roles don't get dashboard access by default
         updateFields.access_results_dashboard = false;
         updateFields.access_admin_support = false;
         updateFields.access_email_dashboard = false;
@@ -213,6 +217,7 @@ const migrateRolePermissions = async () => {
       console.log(`Sample Role ${index + 1}:`, {
         role_id: role.role_id,
         role_name: role.role_name,
+        access_dashboard: role.access_dashboard,
         access_results_dashboard: role.access_results_dashboard,
         access_admin_support: role.access_admin_support,
         access_email_dashboard: role.access_email_dashboard,

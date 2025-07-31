@@ -528,7 +528,7 @@ const MainLayout = ({ children, title, breadcrumbs }) => {
         return <ExtensionIcon />;
       case 'questions':
         return <QuizIcon />;
-      case 'my tests':
+              case 'my assessments':
         return <AssignmentIcon />;
       case 'results':
         return <AssessmentIcon />;
@@ -620,7 +620,7 @@ const MainLayout = ({ children, title, breadcrumbs }) => {
       },
     ],
     candidate: [
-      { name: 'My Tests', path: '/my-tests', icon: getMenuIcon('My Tests'), permission: 'access_candidate_tests' },
+              { name: 'My Assessments', path: '/my-assessments', icon: getMenuIcon('My Assessments'), permission: 'access_candidate_tests' },
       { name: 'Support', path: '/support', icon: getMenuIcon('Support'), permission: 'access_support' },
     ],
     supervisor: [
@@ -686,7 +686,7 @@ const MainLayout = ({ children, title, breadcrumbs }) => {
     // Candidate-specific section (only shown to candidates)
     { 
       id: 'candidate',
-      name: 'My Tests', 
+              name: 'My Assessments', 
       items: menuGroups.candidate,
       requiredPermissions: ['access_candidate_tests', 'access_my_tests', 'access_support'],
       roleSpecific: 'candidate'

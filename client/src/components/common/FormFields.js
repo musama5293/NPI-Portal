@@ -377,18 +377,17 @@ export const FormDatePicker = ({
       value={value || null}
       onChange={handleChange}
       disabled={disabled}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          name={name}
-          variant="outlined"
-          fullWidth={fullWidth}
-          margin="normal"
-          required={required}
-          error={Boolean(error)}
-          helperText={error}
-        />
-      )}
+      slotProps={{
+        textField: {
+          name,
+          variant: "outlined",
+          fullWidth,
+          margin: "normal",
+          required,
+          error: Boolean(error),
+          helperText: error
+        }
+      }}
       {...rest}
     />
   );

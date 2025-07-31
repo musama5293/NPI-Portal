@@ -168,7 +168,7 @@ const ProtectedRoute = ({ children, requiredRole, pagePermission }) => {
       if (user?.role_id === 3) {
         return <Navigate to="/supervisor-tests" />;
       } else if (user?.role_id === 4) {
-        return <Navigate to="/my-tests" />;
+        return <Navigate to="/my-assessments" />;
       } else {
         return <Navigate to="/" />;
       }
@@ -472,7 +472,7 @@ const App = () => {
           } />
           
           {/* Candidate Tests */}
-          <Route path="/my-tests" element={
+          <Route path="/my-assessments" element={
             <ProtectedRoute pagePermission="access_candidate_tests">
               <MyTests />
             </ProtectedRoute>

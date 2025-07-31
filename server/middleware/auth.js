@@ -71,7 +71,7 @@ exports.protect = async (req, res, next) => {
     allPagePermissions.forEach(permission => {
       if (role[permission] === true) {
         userPermissions.push(permission);
-      }
+        }
     });
     
     // Add permissions array to user object
@@ -186,4 +186,4 @@ exports.hasPageAccess = (pagePermission) => {
     }
     next();
   };
-}; 
+};

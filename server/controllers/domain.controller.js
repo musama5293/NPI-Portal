@@ -144,7 +144,7 @@ exports.updateDomain = async (req, res) => {
     const { domain_name, description, domain_status } = req.body;
     
     // Find domain (admin can update any, others only their org's domains)
-    const domainFilter = req.user.role_id === 1 
+    const domainFilter = req.user.role_id === 1
       ? { domain_id: req.params.id }
       : { domain_id: req.params.id, org_id: req.user.org_id };
     
