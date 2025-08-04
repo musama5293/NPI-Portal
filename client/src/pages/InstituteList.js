@@ -25,7 +25,7 @@ import {
   School as SchoolIcon
 } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const InstituteList = () => {
   const theme = useTheme();

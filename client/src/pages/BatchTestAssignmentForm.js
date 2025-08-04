@@ -49,7 +49,7 @@ import {
   Check as CheckIcon
 } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const BatchTestAssignmentForm = () => {
   const navigate = useNavigate();

@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 import MainLayout from '../layouts/MainLayout';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const OrganizationForm = () => {
   const { id } = useParams();

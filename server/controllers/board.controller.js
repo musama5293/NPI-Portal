@@ -22,16 +22,47 @@ exports.getAllBoards = async (req, res) => {
       })
       .lean();
     
-    // Count candidates for each board
-    const boardsWithCounts = boards.map(board => ({
-      ...board,
-      candidate_count: board.candidates ? board.candidates.length : 0
+    // Fetch job details for each board
+    const Organization = require('../models/organization.model');
+    const Institute = require('../models/institute.model');
+    const Department = require('../models/department.model');
+    
+    const boardsWithJobDetails = await Promise.all(boards.map(async (board) => {
+      const jobDetails = [];
+      
+      if (board.job_ids && board.job_ids.length > 0) {
+        for (const jobId of board.job_ids) {
+          const job = await Job.findOne({ job_id: jobId }).lean();
+          if (job) {
+            // Fetch organization, institute, and department details
+            const [org, inst, dept] = await Promise.all([
+              Organization.findOne({ org_id: job.org_id }).lean(),
+              job.inst_id ? Institute.findOne({ inst_id: job.inst_id }).lean() : null,
+              job.dept_id ? Department.findOne({ dept_id: job.dept_id }).lean() : null
+            ]);
+            
+            jobDetails.push({
+              job_id: job.job_id,
+              job_name: job.job_name,
+              org_name: org ? org.org_name : 'Unknown',
+              inst_name: inst ? inst.inst_name : null,
+              dept_name: dept ? dept.dept_name : null
+            });
+          }
+        }
+      }
+      
+      return {
+        ...board,
+        candidate_count: board.candidates ? board.candidates.length : 0,
+        job_details: jobDetails
+      };
     }));
     
     return res.status(200).json({
       success: true,
       count: boards.length,
-      data: boardsWithCounts
+      data: boardsWithJobDetails
     });
   } catch (error) {
     console.error('Error fetching boards:', error);

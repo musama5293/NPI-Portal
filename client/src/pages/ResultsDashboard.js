@@ -62,7 +62,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import MainLayout from '../layouts/MainLayout';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 // Custom Tab Panel
 function TabPanel({ children, value, index, ...other }) {

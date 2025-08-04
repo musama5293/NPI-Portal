@@ -15,7 +15,7 @@ import {
 import { Grid, Box, CircularProgress, Typography, Alert } from '@mui/material';
 import { Edit as EditIcon } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const CandidateProfileEdit = () => {
   const navigate = useNavigate();
@@ -161,6 +161,8 @@ const CandidateProfileEdit = () => {
 
       const submissionData = { 
         ...userData,
+        // Handle password change
+        ...(userData.password ? { newPassword: userData.password } : {}),
         // Remove password field if empty (don't update password)
         ...(userData.password ? {} : { password: undefined })
       };
@@ -178,7 +180,7 @@ const CandidateProfileEdit = () => {
         cand_mobile_no: formData.mobile_no
       };
 
-      const res = await axios.put(`${API_URL}/api/users/${user.id}`, submissionData);
+      const res = await axios.put(`${API_URL}/api/users/profile`, submissionData);
       
       if (res.data.success) {
         setSuccess('Profile updated successfully');

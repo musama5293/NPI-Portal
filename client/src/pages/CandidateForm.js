@@ -68,7 +68,7 @@ import {
 } from '../utils/api';
 import CandidateStatusModal from '../components/CandidateStatusModal';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 // Component to display credentials in a modal
 const CredentialsModal = ({ credentials, onClose }) => {

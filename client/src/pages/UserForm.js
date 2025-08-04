@@ -15,7 +15,7 @@ import {
 import { Grid, Box, CircularProgress } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const UserForm = () => {
   const { id } = useParams();

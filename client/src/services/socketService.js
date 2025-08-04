@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { SOCKET_URL } from '../config/config';
 
 console.log('🚀 Socket service module loaded');
 
@@ -29,7 +30,7 @@ class SocketService {
       this.socket.disconnect();
     }
 
-    const serverUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const serverUrl = SOCKET_URL;
     console.log('🔌 Attempting to connect to socket server:', serverUrl);
     console.log('📋 User data for registration:', userData);
     

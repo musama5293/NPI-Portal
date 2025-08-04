@@ -37,7 +37,7 @@ import {
   Person as PersonIcon
 } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const BoardForm = () => {
   const { id } = useParams();
@@ -310,7 +310,11 @@ const BoardForm = () => {
                           return (
                             <Chip 
                               key={value} 
-                              label={job ? job.job_name : value} 
+                              label={
+                                job ? 
+                                `${job.job_name} (${job.organization?.org_name || 'Unknown'})` : 
+                                value
+                              } 
                               size="small"
                               icon={<WorkIcon />}
                             />
@@ -325,7 +329,14 @@ const BoardForm = () => {
                         <Checkbox checked={formData.job_ids.indexOf(job.job_id) > -1} />
                         <ListItemText 
                           primary={job.job_name} 
-                          secondary={`Test ID: ${job.test_id}`} 
+                          secondary={
+                            <Box>
+                              <div>Test ID: {job.test_id}</div>
+                              <div>Org: {job.organization?.org_name || 'Unknown'}</div>
+                              {job.institute?.inst_name && <div>Inst: {job.institute.inst_name}</div>}
+                              {job.department?.dept_name && <div>Dept: {job.department.dept_name}</div>}
+                            </Box>
+                          } 
                         />
                       </MenuItem>
                     ))}

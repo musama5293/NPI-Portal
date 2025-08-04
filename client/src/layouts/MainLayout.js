@@ -149,7 +149,7 @@ const NavItemWrapper = styled(Box)(({ theme }) => ({
 const ContentContainer = styled(Box)(({ theme }) => ({
   flexGrow: 1,
   backgroundColor: theme.palette.background.default,
-  minHeight: '100vh',
+  minHeight: 'calc(100vh - 64px)',
   display: 'flex',
   flexDirection: 'column',
   marginTop: 64, // AppBar height
@@ -161,6 +161,8 @@ const ContentContainer = styled(Box)(({ theme }) => ({
 const MainContent = styled(Box)(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
+  overflowY: 'auto',
+  minHeight: 0,
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(2),
   }

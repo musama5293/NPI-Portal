@@ -45,14 +45,28 @@ export const FormTextField = ({
   endAdornment,
   ...rest
 }) => {
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Check for email validation error
+  const emailError = type === 'email' && value && !isValidEmail(value) 
+    ? 'Please enter a valid email address' 
+    : null;
+
+  // Combine custom error with email validation error
+  const finalError = error || emailError;
+
   return (
     <TextField
       name={name}
       label={label}
       value={value || ''}
       onChange={onChange}
-      error={Boolean(error)}
-      helperText={error}
+      error={Boolean(finalError)}
+      helperText={finalError}
       type={type}
       required={required}
       fullWidth={fullWidth}
@@ -377,17 +391,18 @@ export const FormDatePicker = ({
       value={value || null}
       onChange={handleChange}
       disabled={disabled}
-      slotProps={{
-        textField: {
-          name,
-          variant: "outlined",
-          fullWidth,
-          margin: "normal",
-          required,
-          error: Boolean(error),
-          helperText: error
-        }
-      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          name={name}
+          variant="outlined"
+          fullWidth={fullWidth}
+          margin="normal"
+          required={required}
+          error={Boolean(error)}
+          helperText={error}
+        />
+      )}
       {...rest}
     />
   );

@@ -43,7 +43,7 @@ import MainLayout from '../layouts/MainLayout';
 import PageHeader from '../components/common/PageHeader';
 import { FormTextField, FormSelectField, FormSection } from '../components/common/FormFields';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const CandidateImport = () => {
   const [searchParams] = useSearchParams();
@@ -507,17 +507,24 @@ const CandidateImport = () => {
   };
 
   const handleManualSubmit = async () => {
-    // Validate required fields
+    // Email validation function
+    const isValidEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+    
+    // Validate required fields and email format
     const invalidCandidates = manualCandidates.filter(candidate => {
       if (!candidate.firstName) return true;
       if (!candidate.email) return true;
+      if (!isValidEmail(candidate.email)) return true;
       if (!candidate.cnic_no) return true;
       if (!jobId && !candidate.org_id) return true;
       return false;
     });
     
     if (invalidCandidates.length > 0) {
-      toast.error('Please fill in all required fields for all candidates.');
+      toast.error('Please fill in all required fields and ensure all email addresses are valid for all candidates.');
       return;
     }
     
@@ -785,15 +792,6 @@ const CandidateImport = () => {
                 "Add Multiple Candidates (Required: First Name, Email, CNIC)" : 
                 "Add Multiple Candidates (Required: First Name, Email, CNIC, Organization)"
               }>
-                <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={handleAddCandidate}
-                  >
-                    Add Another Candidate
-                  </Button>
-                </Box>
                 
                 {manualCandidates.map((candidate, index) => (
                   <Paper
@@ -1034,7 +1032,15 @@ const CandidateImport = () => {
                   </Paper>
                 ))}
                 
-                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddCandidate}
+                  >
+                    Add Another Candidate
+                  </Button>
+                  
                   <Button
                     variant="contained"
                     color="primary"

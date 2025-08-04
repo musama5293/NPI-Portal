@@ -52,7 +52,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 const QUESTIONS_PER_PAGE = 15;
 
 // NUST Theme Colors

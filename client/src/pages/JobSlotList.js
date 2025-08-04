@@ -4,7 +4,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import MainLayout from '../layouts/MainLayout';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const JobSlotList = () => {
   const { id: jobId } = useParams(); // If this component is accessed via /jobs/:id/slots

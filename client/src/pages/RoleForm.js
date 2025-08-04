@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../context/AuthContext';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 // Page access permission groups - Updated with new pages
 const pagePermissionGroups = [

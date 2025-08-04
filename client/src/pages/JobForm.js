@@ -22,7 +22,7 @@ import {
   Quiz as QuizIcon
 } from '@mui/icons-material';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const JobForm = () => {
   const { id } = useParams();

@@ -29,7 +29,7 @@ import { getTests, deleteTest } from '../utils/api';
 import PageHeader from '../components/common/PageHeader';
 import DataTable from '../components/common/DataTable';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const TestList = () => {
   const [tests, setTests] = useState([]);

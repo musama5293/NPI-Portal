@@ -52,7 +52,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Navigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 // NUST Theme Colors
 const nustTheme = {

@@ -81,7 +81,7 @@ import EmailLogsList from './pages/EmailLogsList';
 import RoleUpdater from './components/common/RoleUpdater';
 
 // Test backend connectivity
-const API_URL = 'http://localhost:5000';
+import { API_URL } from './config/config';
 
 // Loading component
 const LoadingScreen = () => (

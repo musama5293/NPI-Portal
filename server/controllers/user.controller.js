@@ -775,7 +775,7 @@ exports.getUsers = async (req, res) => {
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { username, email, mobile_no, currentPassword, newPassword, profile } = req.body;
+    const { username, email, mobile_no, currentPassword, newPassword, profile, candidate_data } = req.body;
     
     // Find user
     const user = await User.findById(userId).select('+password');
@@ -817,7 +817,15 @@ exports.updateProfile = async (req, res) => {
           candidate.cand_name = `${user.profile?.firstName || ''} ${user.profile?.lastName || ''}`.trim() || user.username;
           candidate.cand_email = user.email;
           candidate.cand_mobile_no = user.mobile_no;
-          // Add other relevant candidate fields from profile update if necessary
+          
+          // Update candidate-specific fields if provided
+          if (candidate_data) {
+            if (candidate_data.cand_cnic_no) candidate.cand_cnic_no = candidate_data.cand_cnic_no;
+            if (candidate_data.cand_gender) candidate.cand_gender = candidate_data.cand_gender;
+            if (candidate_data.cand_nationality) candidate.cand_nationality = candidate_data.cand_nationality;
+            if (candidate_data.cand_whatsapp_no !== undefined) candidate.cand_whatsapp_no = candidate_data.cand_whatsapp_no;
+          }
+          
           await candidate.save();
         }
       } catch (candError) {
@@ -2140,6 +2148,27 @@ exports.registerCandidate = async (req, res) => {
     
   } catch (error) {
     console.error('Error registering candidate:', error);
+    
+    // Handle Mongoose validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        message: validationErrors.join(', '),
+        error: error.message
+      });
+    }
+    
+    // Handle duplicate key errors (e.g., duplicate email)
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
+        error: error.message
+      });
+    }
+    
     return res.status(500).json({
       success: false,
       message: 'Error registering candidate',

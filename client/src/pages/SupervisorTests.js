@@ -37,7 +37,7 @@ import PageHeader from '../components/common/PageHeader';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 
-const API_URL = 'http://localhost:5000';
+import { API_URL } from '../config/config';
 
 const SupervisorTests = () => {
   const { user } = useAuth();

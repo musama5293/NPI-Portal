@@ -71,10 +71,21 @@ temp/
 
 # PM2 files
 .pm2/
+ecosystem.config.js
 
 # Backup files
 *.bak
 *.backup
+*.backup.js
+
+# Deployment scripts
+auto-pull.sh
+deploy-*.sh
+
+# Server-specific configuration
+server/.env
+server/config/
+server/logs/
 
 # Package lock files (optional - remove if you want to include them)
 # package-lock.json
